@@ -62,12 +62,20 @@ bun run dev ask "How does the authentication system work?" --repo https://github
 
 ```
 code-dependency-agent/
-├── index.ts           # CLI entry point
-├── analyzer.ts        # AST-powered analysis engine
-├── gemini.ts          # AI integration service
-├── types.ts           # Type definitions
-├── package.json       # Dependencies and scripts
-└── README.md          # This file
+├── src/
+│   ├── cli/
+│   │   └── index.ts          # CLI entry point
+│   ├── core/
+│   │   ├── analyzer.ts       # AST-powered analysis engine
+│   │   └── types.ts          # Type definitions
+│   └── services/
+│       └── gemini.ts         # AI integration service
+├── docs/
+│   └── resources/            # Documentation assets
+├── package.json              # Dependencies and scripts
+├── tsconfig.json             # TypeScript configuration
+├── .env.example              # Environment template
+└── README.md                 # This file
 ```
 
 ## CLI Commands
