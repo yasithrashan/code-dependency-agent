@@ -1,5 +1,5 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
-import type { AnalysisResult } from "../../types/index.ts";
+import type { AnalysisResult } from "../../../types.ts";
 
 const API_KEY = process.env.GEMINI_API_KEY;
 
