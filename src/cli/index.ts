@@ -1,7 +1,7 @@
 import { Command } from "commander";
 import chalk from "chalk";
 import { analyzeRepo } from "../core/analyzer.ts";
-import { askGemini } from "../services/gemini-services.ts";
+import { askGemini } from "../services/gemini.ts";
 
 const program = new Command();
 
