@@ -8,7 +8,7 @@
     "bun-types": "^1.2.19"
   },
   "scripts": {
-    "dev": "bun index.ts"
+    "dev": "bun src/cli/index.ts"
   },
   "peerDependencies": {
     "typescript": "^5.8.3"
