@@ -1,68 +1,43 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
-import type { AnalysisResult } from "../../types";
+import type { AnalysisResult } from "../../types/index.ts";
 
 const API_KEY = process.env.GEMINI_API_KEY;
 
 if (!API_KEY) {
-  throw new Error("GEMINI_API_KEY is not set in the environment variables.");
+  throw new Error("Please set GEMINI_API_KEY in your environment");
 }
 
 const genAI = new GoogleGenerativeAI(API_KEY);
-
-const model = genAI.getGenerativeModel({
-    model: "gemini-2.5-flash",
-})
+const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash-exp" });
 
 export async function askGemini(question: string, analysis: AnalysisResult): Promise<string> {
   const prompt = `
-You are analyzing a TypeScript/JavaScript codebase. Here's what I found:
+You are analyzing a TypeScript/JavaScript codebase.
 
-**Files analyzed:** ${analysis.summary.totalFiles}
-**Dependencies:** ${analysis.summary.totalDependencies}
+**Codebase Summary:**
+- Files: ${analysis.summary.totalFiles}
+- Dependencies: ${analysis.summary.totalDependencies}
 
-**Key dependencies:**
-${analysis.dependencies.slice(0, 15).map(dep => {
-  const typeInfo = dep.isTypeOnly ? ' (type-only)' : '';
-  const names = dep.names.length > 0 ? ` [${dep.names.join(', ')}]` : '';
-  return `- ${dep.from} → ${dep.to}${names}${typeInfo}`;
-}).join('\n')}
+**Key Dependencies:**
+${analysis.dependencies.slice(0, 10).map(dep =>
+  `- ${dep.from} → ${dep.to}`
+).join('\n')}
 
-**Files with most connections:**
+**Main Files:**
 ${analysis.files
   .sort((a, b) => (b.imports.length + b.exports.length) - (a.imports.length + a.exports.length))
   .slice(0, 8)
   .map(f => `- ${f.path} (${f.imports.length} imports, ${f.exports.length} exports)`)
   .join('\n')}
 
-**Export patterns:**
-${Object.entries(
-  analysis.files
-    .flatMap(f => f.exports)
-    .reduce((acc, exp) => {
-      acc[exp.type] = (acc[exp.type] || 0) + 1;
-      return acc;
-    }, {} as Record<string, number>)
-).map(([type, count]) => `- ${type}: ${count}`).join('\n')}
-
-**Import patterns:**
-${Object.entries(
-  analysis.files
-    .flatMap(f => f.imports)
-    .reduce((acc, imp) => {
-      acc[imp.type] = (acc[imp.type] || 0) + 1;
-      return acc;
-    }, {} as Record<string, number>)
-).map(([type, count]) => `- ${type}: ${count}`).join('\n')}
-
 **Question:** ${question}
 
-Please answer the question based on the codebase analysis above. Be specific and reference actual file names when possible.
+Please answer based on the codebase analysis above. Be specific and reference actual files.
   `;
 
   try {
     const result = await model.generateContent(prompt);
-    const response = await result.response;
-    return response.text();
+    return result.response.text();
   } catch (error) {
     if (error instanceof Error) {
       throw new Error(`Gemini API error: ${error.message}`);
