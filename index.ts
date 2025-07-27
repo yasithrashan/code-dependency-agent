@@ -7,7 +7,7 @@ const program = new Command();
 
 program
     .name('code-dependency-agent')
-    .description('AST-powered dependency agent for repositories')
+    .description('Intelligent code dependency analyzer using TypeScript AST and Gemini AI for repository insights')
     .version('1.0.0');
 program
     .command('analyze')
